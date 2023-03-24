@@ -5,7 +5,7 @@
 
   <div class="flex rela">
     <img
-      :src="imgurl"
+      :src="userInfo.avar"
       alt=""
       @click="updateAvar = !updateAvar"
       class="smallimg"
@@ -49,7 +49,7 @@
 </template>
 
 <script setup>
-import { ref, shallowRef } from "vue";
+import { onMounted, reactive, ref, shallowRef } from "vue";
 
 import { getCurrentInstance } from "vue";
 
@@ -64,6 +64,9 @@ const centerDialogVisible = ref(false);
 
 //图片路径
 let imgurl = ref("http://localhost:8080/assets/header.jpg");
+defineProps({ userInfo: Object });
+
+//解决父传的数据不能更新
 
 //图片前台更新
 function changeImg() {
@@ -78,20 +81,25 @@ async function Avar() {
   let Upavar = proxy.$refs.avar.files[0];
   let formData = new FormData();
   formData.append("fileName", Upavar);
-  let { data } = await proxy.$http({
+  let res = await proxy.$http({
     method: "post",
-    url: "http://localhost:3000/api/upload",
+    url: "/api/upload",
     data: formData,
     contentType: false,
     processData: false,
+    // bug1: 上传头像时 在封装axios时  Content-Type默认为 application/json;charset=utf-8
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
   });
-  if (data.status == 0) {
+  console.log(res);
+  if (res.status == 0) {
     ElMessage({
       message: "更新成功",
       grouping: true,
       type: "success",
     });
-    imgurl.value = data.data;
+    imgurl.value = res.data;
     updateAvar.value = false;
   }
 }

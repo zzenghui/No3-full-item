@@ -2,7 +2,7 @@
   <div class="common-layout">
     <el-container>
       <el-header class="flex-lf">
-        <Header />
+        <Header :userInfo="userInfo" />
       </el-header>
       <el-container>
         <el-aside>
@@ -17,7 +17,13 @@
 <script setup>
 import Header from "@/components/Header";
 import Nav from "@/components/Nav";
-import { onMounted, getCurrentInstance, ref } from "vue";
+import {
+  onMounted,
+  getCurrentInstance,
+  ref,
+  reactive,
+  onBeforeMount,
+} from "vue";
 
 //获取this实例
 let { proxy } = getCurrentInstance();
@@ -25,7 +31,10 @@ let { proxy } = getCurrentInstance();
 //登陆后的用户名
 let username = ref("");
 
-onMounted(async () => {
+//登陆后的用户信息
+let userInfo = ref({});
+
+onBeforeMount(async () => {
   //获取用户信息
   let res = await proxy.$http({
     method: "get",
@@ -33,14 +42,17 @@ onMounted(async () => {
     headers: { Authorization: localStorage.getItem("token") },
   });
 
+  userInfo.value = {...res.data};
+  console.log(userInfo);
   if (res.status == 0) {
-    username.value = res.data.name;
+    username.value = res.data.username;
     // 登陆成功后的提示框
     ElNotification.success({
       title: `您好: ${username.value}`,
       message: "欢迎登录XXXX后台系统",
       showClose: false,
       duration: 2000,
+      offset: 70,
     });
   }
 });

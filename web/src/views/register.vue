@@ -96,6 +96,7 @@ async function register() {
       username: userInfos.username,
       password: userInfos.password,
       createtime: Data(),
+      avar:'https://gss0.baidu.com/-vo3dSag_xI4khGko9WTAnF6hhy/zhidao/pic/item/8b82b9014a90f60376baa9db3912b31bb051ed27.jpg'
     };
     let res = await proxy.$http({
       method: "post",

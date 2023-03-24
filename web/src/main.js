@@ -15,7 +15,7 @@ import { ElLoading } from 'element-plus'
 //封装axios
 const server = axios.create({
     baseURL: 'http://localhost:3000',
-    timeout: 8000,
+    timeout: 1000,
     headers: {
         "Content-Type": "application/json;charset=utf-8"
     }

@@ -83,14 +83,21 @@ router.get('/api/getinfo', (req, res) => {
         msg: "fail"
       })
     } else {
-      res.send({
-        status: 0,
-        data: data,
-        msg: "success"
+      let username = data.name
+      db.query('select * from users where username = ?', username, (errsql, datasql) => {
+        if (errsql) return
+        console.log(datasql[0]);
+        res.send({
+          status: 0,
+          data: datasql[0],
+          msg: "success"
+        })
       })
     }
   })
 
 })
+
+
 
 module.exports = router;
