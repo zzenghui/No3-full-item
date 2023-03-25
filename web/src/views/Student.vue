@@ -1,9 +1,11 @@
 <template>
-  <h1>订单管理</h1>
+  <h1>学生信息</h1>
 </template>
 
-<script setup>
+<script>
+export default {
 
+}
 </script>
 
 <style>

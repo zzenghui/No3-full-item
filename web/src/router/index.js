@@ -13,31 +13,81 @@ const routes = [
     component: () => import('../views/register.vue')
   },
   {
+    path: '/student',
+    name: 'student',
+    component: () => import('../views/Student.vue')
+  },
+  {
     path: "/",
     name: "layout",
     component: () => import('../views/Layout.vue'),
-    redirect: '/account',
+    redirect: '/index',
     meta: { isAuth: true },
     children: [
       {
-        path: '/account',
-        name: 'account',
-        component: () => import('../pages/Account.vue')
+        path: '/index',
+        name: 'index',
+        component: () => import('../pages/Index.vue')
       },
       {
-        path: '/character',
-        name: "character",
-        component: () => import('../pages/Character.vue')
+        path: '/teacher',
+        name: 'teacher',
+        component: () => import('../pages/Teacher.vue')
       },
       {
-        path: '/orders',
-        name: 'orders',
-        component: () => import('../pages/Orders.vue')
+        path: '/bedroom',
+        name: 'bedroom',
+        component: () => import('../pages/myBedroom.vue')
       },
       {
-        path: "/store",
-        name: 'store',
-        component: () => import('../pages/store.vue')
+        path: '/mystudent',
+        name: "mystudent",
+        component: () => import('../pages/myStudent.vue')
+      },
+      {
+        path: '/myclass',
+        name: 'myclass',
+        component: () => import('../pages/myClass.vue')
+      },
+      {
+        path: "/checkgather",
+        name: 'checkgather',
+        component: () => import('../pages/checkGather.vue')
+      },
+      {
+        path: "/checkinfo",
+        name: 'checkinfo',
+        component: () => import('../pages/checkInfo.vue')
+      },
+      {
+        path: "/affairs",
+        name: 'affairs',
+        component: () => import('../pages/affairs.vue')
+      },
+      {
+        path: "/checkAffairs",
+        name: 'checkAffairs',
+        component: () => import('../pages/checkAffairs.vue')
+      },
+      {
+        path: "/practice",
+        name: 'practice',
+        component: () => import('../pages/practice.vue')
+      },
+      {
+        path: "/practice",
+        name: 'practice',
+        component: () => import('../pages/practice.vue')
+      },
+      {
+        path: "/system",
+        name: 'system',
+        component: () => import('../pages/system.vue')
+      },
+      {
+        path: "/supervisory",
+        name: 'supervisory',
+        component: () => import('../pages/supervisory.vue')
       }
     ]
   },

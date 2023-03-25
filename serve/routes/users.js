@@ -58,7 +58,8 @@ router.post('/api/login', (req, res) => {
       let token = jwt.sign({ name: username }, 'tokenkey', { expiresIn: '10h' })
       res.send({
         status: 0,
-        token: token
+        token: token,
+        data: data[0]
       })
     } else {
       res.send({

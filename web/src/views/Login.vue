@@ -39,9 +39,9 @@
           <el-button type="primary" class="el-login-button" @click="submitForm"
             >登录</el-button
           >
-          <el-button type="default" class="el-login-button" @click="gotoReg"
+          <!-- <el-button type="default" class="el-login-button" @click="gotoReg"
             >没有账号,前去注册</el-button
-          >
+          > -->
         </el-form-item>
       </el-form>
     </div>
@@ -75,9 +75,11 @@ async function submitForm() {
     url: "/users/api/login",
     data: userInfo,
   });
+  console.log(res);
   if (res.status == 0) {
     let token = res.token;
     localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(res.data));
     ElMessage({
       message: "登陆成功",
       grouping: true,
@@ -85,9 +87,15 @@ async function submitForm() {
     });
 
     setTimeout(() => {
-      router.push({
-        path: "/",
-      });
+      if (res.data.isTeacher == 1 || res.data.isAdmin == 1) {
+        router.push({
+          path: "/",
+        });
+      } else {
+        router.push({
+          path: "/student",
+        });
+      }
     }, 2000);
   } else {
     ElMessage({

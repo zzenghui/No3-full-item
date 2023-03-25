@@ -1,5 +1,5 @@
 <template>
-  <h1>商品管理</h1>
+  <h1>内务管理</h1>
 </template>
 
 <script setup>

@@ -95,8 +95,21 @@ async function register() {
       nanoid: nanoid(),
       username: userInfos.username,
       password: userInfos.password,
+      isAdmin: 0,
+      isTeacher: 0,
+      isStudent: 1,
       createtime: Data(),
-      avar:'https://gss0.baidu.com/-vo3dSag_xI4khGko9WTAnF6hhy/zhidao/pic/item/8b82b9014a90f60376baa9db3912b31bb051ed27.jpg'
+      avar: "https://gss0.baidu.com/-vo3dSag_xI4khGko9WTAnF6hhy/zhidao/pic/item/8b82b9014a90f60376baa9db3912b31bb051ed27.jpg",
+      age: 0,
+      sex: "",
+      Political: "",
+      dormitoryId: 0,
+      classId: 0,
+      sno: "",
+      employeeId: 0,
+      classList: "[]",
+      Qualification: 0,
+      bedroomList: "[]",
     };
     let res = await proxy.$http({
       method: "post",

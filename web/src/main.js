@@ -12,6 +12,8 @@ import { ElLoading } from 'element-plus'
 
 
 
+
+
 //封装axios
 const server = axios.create({
     baseURL: 'http://localhost:3000',

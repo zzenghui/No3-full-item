@@ -1,5 +1,5 @@
 <template>
-  <h1>角色管理</h1>
+  <h1>查寝信息</h1>
 </template>
 
 <script setup>

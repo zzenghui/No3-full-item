@@ -1,22 +1,22 @@
 <template>
   <div class="flex">
-    <h1 class="title">XXXX管理系统</h1>
+    <h1 class="title">学生宿舍管理系统</h1>
   </div>
 
   <div class="flex rela">
-    <img
+    <!-- <img
       :src="userInfo.avar"
       alt=""
       @click="updateAvar = !updateAvar"
       class="smallimg"
-    />
+    /> -->
     <el-button type="danger" @click="centerDialogVisible = true"
       >退出登录</el-button
     >
     <!-- 更新信息 -->
     <div class="updateInfo" v-show="updateAvar">
       <label for="file">
-        <img :src="imgurl" alt="" class="bigAvar" />
+        <img :src="userInfo.avar" alt="" class="bigAvar" />
         <input
           ref="avar"
           type="file"
