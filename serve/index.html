@@ -12,6 +12,7 @@
 <body>
     <button id="btn">注册</button>
     <button id="btn1">登录</button>
+    <button id="btn2">删除</button>
     <script>
 
         //注册
@@ -56,6 +57,17 @@
             })
             console.log(res.data);
         }
+
+        //删除老师
+        document.querySelector('#btn2').addEventListener('click', async function () {
+            let deleteTeacherRes = await axios({
+                method: "post",
+                url: "http://localhost:3000/teacher/deleteTeacher",
+                data: 1,
+            });
+            console.log(deleteTeacherRes);
+        })
+
     </script>
 </body>
 

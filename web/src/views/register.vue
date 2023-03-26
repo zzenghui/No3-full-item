@@ -110,6 +110,9 @@ async function register() {
       classList: "[]",
       Qualification: 0,
       bedroomList: "[]",
+      headteacher: "",
+      classname: "",
+      dormitoryname: "",
     };
     let res = await proxy.$http({
       method: "post",

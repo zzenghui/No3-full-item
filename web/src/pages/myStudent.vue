@@ -4,8 +4,9 @@
       <el-button type="primary" class="btn" @click="dialogTableVisible = true"
         >新增学生</el-button
       >
-      <el-input placeholder="请输入用户名查询"></el-input>
-      <el-button type="primary">查询</el-button>
+      <el-input placeholder="请输入用户名查询" v-model="keyword"></el-input>
+      <el-button type="primary" @click="searchStu">查询</el-button>
+      <el-button type="primary" @click="getStudetInfo">展示所有</el-button>
     </div>
 
     <!-- 表格 -->
@@ -17,13 +18,13 @@
     >
       <el-table-column type="selection" width="100" />
       <el-table-column label="创建时间" property="createtime" width="200">
-
       </el-table-column>
       <el-table-column property="username" label="用户名" width="150" />
       <el-table-column property="sno" label="学号" width="150" />
-      <el-table-column property="dormitoryId" label="宿舍号" width="130" />
-      <el-table-column property="className" label="班级" width="130" />
-      <el-table-column property="teacher" label="班主任" width="180" />
+      <el-table-column property="sex" label="性别" width="80" />
+      <el-table-column property="dormitoryname" label="宿舍号" width="130" />
+      <el-table-column property="classname" label="班级" width="130" />
+      <el-table-column property="tname" label="班主任" width="130" />
       <el-table-column label="操作" width="220">
         <template #default="scope">
           <el-button size="small" @click="handleEdit(scope.row.date)"
@@ -32,7 +33,7 @@
           <el-button
             size="small"
             type="danger"
-            @click="handleDelete(scope.row.date)"
+            @click="deleteStudent(scope.row)"
             >Delete</el-button
           >
         </template>
@@ -63,27 +64,34 @@
       </el-form-item>
 
       <el-form-item label="宿舍分配" :label-width="formLabelWidth">
-        <el-select v-model="studentObj.Political" placeholder="请输入宿舍号">
-          <el-option label="宿舍1号" value="宿舍1号" />
-          <el-option label="宿舍2号" value="宿舍2号" />
-          <el-option label="宿舍3号" value="宿舍3号" />
-          <el-option label="宿舍4号" value="宿舍4号" />
+        <el-select
+          v-model="studentObj.dormitoryname"
+          placeholder="请输入宿舍号"
+        >
+          <el-option
+            :label="`${item.bedroomname}`"
+            :value="`${item.bedroomname}`"
+            v-for="(item, index) in bedroomData"
+            :key="index"
+          />
         </el-select>
       </el-form-item>
 
       <el-form-item label="学生班级" :label-width="formLabelWidth">
-        <el-select v-model="studentObj.Political" placeholder="请输入宿舍号">
-          <el-option label="宿舍1号" value="宿舍1号" />
-          <el-option label="宿舍2号" value="宿舍2号" />
-          <el-option label="宿舍3号" value="宿舍3号" />
-          <el-option label="宿舍4号" value="宿舍4号" />
+        <el-select v-model="studentObj.classname" placeholder="请输入班级">
+          <el-option
+            :label="`${item.classname}`"
+            :value="`${item.classname}`"
+            v-for="(item, index) in classData"
+            :key="index"
+          />
         </el-select>
       </el-form-item>
 
       <el-radio-group v-model="studentObj.sex">
-        <el-radio :label="0">男</el-radio>
-        <el-radio :label="1">女</el-radio>
-        <el-radio :label="2" disabled>未知</el-radio>
+        <el-radio label="男">男</el-radio>
+        <el-radio label="女">女</el-radio>
+        <el-radio label="未知" disabled>未知</el-radio>
       </el-radio-group>
     </el-form>
     <template #footer>
@@ -96,7 +104,7 @@
 </template>
 
 <script setup>
-import { reactive, ref, getCurrentInstance } from "vue";
+import { reactive, ref, getCurrentInstance, onMounted, toRaw } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { nanoid } from "nanoid";
 import date from "../utils/data";
@@ -106,16 +114,7 @@ const dialogTableVisible = ref(false);
 const formLabelWidth = "140px";
 
 //学生数据
-const tableData = [
-  {
-    createtime: "2023-01-22",
-    sno: "123456",
-    username: "zzh",
-    dormitoryId: "宿舍一号",
-    className: "2206班",
-    teacher: "小刘",
-  },
-];
+const tableData = ref([]);
 
 //学生信息
 let studentObj = reactive({
@@ -123,7 +122,52 @@ let studentObj = reactive({
   age: "",
   sex: "",
   Political: "",
+  classname: "",
+  dormitoryname: "",
 });
+
+onMounted(() => {
+  getClassInfo();
+  getBedroomInfo();
+  getStudetInfo();
+});
+
+// 获取当前老师的学生信息;
+async function getStudetInfo() {
+  let id = JSON.parse(localStorage.getItem("user")).id;
+  let res = await proxy.$http({
+    method: "post",
+    url: "/users/getStudent",
+    data: { id },
+  });
+  tableData.value = res.data;
+  console.log(res.data);
+}
+
+//获取当前老师的班级
+let classData = ref([]);
+async function getClassInfo() {
+  let tid = JSON.parse(localStorage.getItem("user")).id;
+  let res = await proxy.$http({
+    method: "post",
+    url: "/classroom/teacherGetClassInfo",
+    data: { tid },
+  });
+  console.log(res);
+  classData.value = res.data;
+}
+
+//获取当前老师的宿舍
+let bedroomData = ref([]);
+async function getBedroomInfo() {
+  let id = JSON.parse(localStorage.getItem("user")).id;
+  let res = await proxy.$http({
+    method: "post",
+    url: "/bedroom/getAdminBedroom",
+    data: { id },
+  });
+  bedroomData.value = res.data;
+}
 
 //添加学生
 async function addStudent() {
@@ -141,21 +185,25 @@ async function addStudent() {
     Political: studentObj.Political,
     dormitoryId: 0,
     classId: 0,
-    sno: "",
+    sno: studentObj.sno,
     employeeId: "",
     classList: "[]",
     Qualification: 0,
     bedroomList: "[]",
+    headteacher: JSON.parse(localStorage.getItem("user")).username,
+    classname: studentObj.classname,
+    dormitoryname: studentObj.dormitoryname,
+    tid: JSON.parse(localStorage.getItem("user")).id,
+    tname: JSON.parse(localStorage.getItem("user")).username,
   };
-  console.log(admin);
 
   let res = await proxy.$http({
     method: "post",
-    url: "/users/api/register",
+    url: "http://localhost:3000/users/addStudent",
     data: admin,
   });
-
   if (res.status == 0) {
+    dialogTableVisible.value = false;
     ElMessage({
       message: "注册成功",
       grouping: true,
@@ -169,17 +217,80 @@ async function addStudent() {
     });
   }
 
-  dialogTableVisible.value = false;
+  // //修改班级和寝室信息
+  // let resBed = await proxy.$http({
+  //   method: "post",
+  //   url: "/bedroom/changenum",
+  //   data: { bedName: admin.dormitoryname },
+  // });
+  // if (resBed.status == 0) {
+  //   //修改教室信息
+  //   let resClass = await proxy.$http({
+  //     method: "post",
+  //     url: "/classroom/changeClassNum",
+  //     data: { classname: admin.classname },
+  //   });
+  //   console.log(resClass);
+  //   let res = await proxy.$http({
+  //     method: "post",
+  //     url: "/users/api/register",
+  //     data: admin,
+  //   });
+
+  //   if (res.status == 0) {
+  //     ElMessage({
+  //       message: "注册成功",
+  //       grouping: true,
+  //       type: "success",
+  //     });
+  //   } else {
+  //     ElMessage({
+  //       message: res.message,
+  //       grouping: true,
+  //       type: "error",
+  //     });
+  //   }
+
+  //
+  // } else {
+  //   ElMessage({
+  //     message: "该宿舍人数已满",
+  //     grouping: true,
+  //     type: "error",
+  //   });
+  // }
 }
 
-//编辑
-function handleEdit(a) {
-  alert(a);
+//查询
+let keyword = ref("");
+async function searchStu() {
+  let res = await proxy.$http({
+    method: "post",
+    url: "/users/searchStu",
+    data: {
+      keyword: keyword.value,
+      id: JSON.parse(localStorage.getItem("user")).id,
+    },
+  });
+  if (res.status == 0) {
+    ElMessage({
+      message: "查询成功",
+      grouping: true,
+      type: "success",
+    });
+    tableData.value = res.data;
+  } else {
+    ElMessage({
+      message: res.message,
+      grouping: true,
+      type: "error",
+    });
+  }
 }
 
 //删除
-function handleDelete() {
-  alert(222);
+function deleteStudent(a) {
+  let stuInfo = toRaw(a);
 }
 </script>
 
@@ -220,10 +331,11 @@ function handleDelete() {
 
 .el-pagination {
   /* display: block; */
-  position: absolute;
+  /* position: absolute;
   bottom: 30px;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%); */
+  margin-top: 20px;
 }
 /* .btn {
   margin-top: 100px;

@@ -8,7 +8,9 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-
+var teacherRouter = require('./routes/teacher')
+var bedroomRouter = require('./routes/bedroom')
+var classRoomRouter = require('./routes/classRoom')
 var app = express();
 
 
@@ -23,9 +25,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors())
+
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-
+app.use('/teacher', teacherRouter);
+app.use('/bedroom', bedroomRouter)
+app.use('/classroom', classRoomRouter)
 
 
 // catch 404 and forward to error handler

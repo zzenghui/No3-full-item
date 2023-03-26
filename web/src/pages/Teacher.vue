@@ -4,8 +4,9 @@
       <el-button type="primary" class="btn" @click="dialogTableVisible = true"
         >新增管理员</el-button
       >
-      <el-input placeholder="请输入用户名查询"></el-input>
-      <el-button type="primary">查询</el-button>
+      <el-input placeholder="请输入用户名查询" v-model="searchvalue"></el-input>
+      <el-button type="primary" @click="selectTeacher">查询</el-button>
+      <el-button type="primary" @click="getTeacherInfo">显示全部</el-button>
     </div>
 
     <!-- 表格 -->
@@ -29,13 +30,30 @@
 
       <el-table-column label="操作" width="220">
         <template #default="scope">
-          <el-button size="small" @click="handleEdit(scope.row.date)"
+          <el-button
+            size="small"
+            @click="
+              updateTeacher(
+                scope.row.username,
+                scope.row.age,
+                scope.row.password,
+                scope.row.Political,
+                scope.row.employeeId,
+                scope.row.sex
+              )
+            "
             >Edit</el-button
           >
           <el-button
             size="small"
             type="danger"
-            @click="handleDelete(scope.row.date)"
+            @click="
+              handleDialog(
+                scope.row.id,
+                scope.row.classList,
+                scope.row.bedroomList
+              )
+            "
             >Delete</el-button
           >
         </template>
@@ -43,7 +61,7 @@
     </el-table>
     <el-pagination background layout="prev, pager, next" :total="1000" />
   </div>
-
+  <!-- 新增管理员 -->
   <el-dialog v-model="dialogTableVisible" title="新增管理员">
     <el-form>
       <el-form-item label="用户名" :label-width="formLabelWidth">
@@ -88,9 +106,9 @@
       </el-form-item>
 
       <el-radio-group v-model="teacherObj.sex">
-        <el-radio :label="0">男</el-radio>
-        <el-radio :label="1">女</el-radio>
-        <el-radio :label="2" disabled>未知</el-radio>
+        <el-radio label="男">男</el-radio>
+        <el-radio label="女">女</el-radio>
+        <el-radio label="未知" disabled>未知</el-radio>
       </el-radio-group>
     </el-form>
     <template #footer>
@@ -100,40 +118,113 @@
       </span>
     </template>
   </el-dialog>
+
+  <!-- 修改管理员 -->
+  <el-dialog v-model="dialogTableUpdateVisible" title="修改管理员">
+    <el-form>
+      <el-form-item label="用户名" :label-width="formLabelWidth">
+        <el-input
+          v-model="updateteacherObj.username"
+          autocomplete="off"
+          disabled
+        />
+      </el-form-item>
+
+      <el-form-item label="密码" :label-width="formLabelWidth">
+        <el-input
+          type="password"
+          v-model="updateteacherObj.password"
+          autocomplete="off"
+        />
+      </el-form-item>
+
+      <el-form-item label="确认密码" :label-width="formLabelWidth">
+        <el-input
+          type="password"
+          v-model="updateteacherObj.password"
+          autocomplete="off"
+        />
+      </el-form-item>
+
+      <el-form-item label="年龄" :label-width="formLabelWidth">
+        <el-input
+          type="number"
+          v-model="updateteacherObj.age"
+          autocomplete="off"
+        />
+      </el-form-item>
+
+      <el-form-item label="职工号" :label-width="formLabelWidth">
+        <el-input
+          type="text"
+          v-model="updateteacherObj.employeeId"
+          autocomplete="off"
+        />
+      </el-form-item>
+
+      <el-form-item label="政治面貌" :label-width="formLabelWidth">
+        <el-select
+          v-model="updateteacherObj.Political"
+          placeholder="请输入政治面貌"
+        >
+          <el-option label="群众" value="群众" />
+          <el-option label="共青团员" value="共青团员" />
+          <el-option label="预备党员" value="预备党员" />
+          <el-option label="党员" value="党员" />
+        </el-select>
+      </el-form-item>
+
+      <el-radio-group v-model="updateteacherObj.sex">
+        <el-radio label="男">男</el-radio>
+        <el-radio label="女">女</el-radio>
+        <el-radio label="未知" disabled>未知</el-radio>
+      </el-radio-group>
+    </el-form>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="dialogTableUpdateVisible = false">取消</el-button>
+        <el-button type="primary" @click="sureUpdate"> 确认 </el-button>
+      </span>
+    </template>
+  </el-dialog>
+
+  <!-- 确定删除对话框 -->
+  <el-dialog v-model="centerDialogVisible" title="Warning" width="30%" center>
+    <span> 删除后老师信息将全部删除,确定要删除么? </span>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="centerDialogVisible = false">Cancel</el-button>
+        <el-button type="primary" @click="deleteTeacherInfo">
+          Confirm
+        </el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup>
-import { reactive, ref, getCurrentInstance } from "vue";
+import { reactive, ref, getCurrentInstance, onMounted } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { nanoid } from "nanoid";
 import date from "../utils/data";
 let { proxy } = getCurrentInstance();
-
+const dialogTableUpdateVisible = ref(false);
+const centerDialogVisible = ref(false);
 const dialogTableVisible = ref(false);
 const formLabelWidth = "140px";
 
-//老师数据
-const tableData = [
-  {
-    username: "小刘",
-    age: 18,
-    sex: 0,
-    employeeId: "126456",
-    Political: "共青团员",
-    createtime: "2022-12-11",
-  },
-];
-
-//老师信息
-let teacherObj = reactive({
-  username: "",
-  password: "",
-  surePassword: "",
-  age: "",
-  sex: "",
-  Political: "",
-  employeeId: "",
+onMounted(async () => {
+  //获取老师数据
+  getTeacherInfo();
 });
+//获取老师数据
+async function getTeacherInfo() {
+  let teacherInfoRes = await proxy.$http({
+    method: "get",
+    url: "/teacher/getTeacherInfo",
+  });
+  tableData.value = teacherInfoRes;
+}
 //添加老师
 async function addTeacher() {
   let admin = {
@@ -155,6 +246,11 @@ async function addTeacher() {
     classList: "[]",
     Qualification: 0,
     bedroomList: "[]",
+    headteacher: "",
+    classname: "",
+    dormitoryname: "",
+    tid: 0,
+    tname: "",
   };
   console.log(admin);
 
@@ -170,6 +266,7 @@ async function addTeacher() {
       grouping: true,
       type: "success",
     });
+    getTeacherInfo();
   } else {
     ElMessage({
       message: res.message,
@@ -180,15 +277,109 @@ async function addTeacher() {
 
   dialogTableVisible.value = false;
 }
-
-//编辑
-function handleEdit(a) {
-  alert(a);
+//处理删除弹出框
+//接受删除老师信息
+let id = "";
+let classList = "";
+let bedroomList = "";
+function handleDialog(ids, classLists, bedroomLists) {
+  centerDialogVisible.value = true;
+  classList = classLists;
+  bedroomList = bedroomLists;
+  id = ids;
 }
-
-//删除
-function handleDelete() {
-  alert(222);
+//删除老师数据
+async function deleteTeacherInfo() {
+  if (classList !== "[]" || bedroomList !== "[]") {
+    ElMessage({
+      message: "该管理员还有管理的班级或者寝室,无法删除",
+      grouping: true,
+      type: "error",
+    });
+  } else {
+    let obj = {
+      id,
+      classList,
+      bedroomList,
+    };
+    let deleteTeacherRes = await proxy.$http({
+      method: "post",
+      url: "/teacher/deleteTeacher",
+      data: obj,
+    });
+    if (deleteTeacherRes.status == 0) {
+      ElMessage({
+        message: deleteTeacherRes.message,
+        grouping: true,
+        type: "success",
+      });
+      centerDialogVisible.value = false;
+      getTeacherInfo();
+    }
+  }
+}
+//表格中老师数据
+const tableData = ref([]);
+//保存老师信息
+let teacherObj = reactive({
+  username: "",
+  password: "",
+  surePassword: "",
+  age: "",
+  sex: "",
+  Political: "",
+  employeeId: "",
+});
+//编辑老师信息
+let updateteacherObj = reactive({
+  username: "",
+  password: "",
+  age: "",
+  employeeId: "",
+  Political: "",
+  sex: "",
+});
+//数据回显
+function updateTeacher(a, b, c, d, e, f) {
+  dialogTableUpdateVisible.value = true;
+  updateteacherObj.username = a;
+  updateteacherObj.age = b;
+  updateteacherObj.password = c;
+  updateteacherObj.Political = d;
+  updateteacherObj.employeeId = e;
+  updateteacherObj.sex = f;
+}
+//点击修改
+async function sureUpdate() {
+  let updateTeacherRes = await proxy.$http({
+    method: "post",
+    url: "/teacher/updateTeacher",
+    data: updateteacherObj,
+  });
+  if (updateTeacherRes.status == 0) {
+    ElMessage({
+      message: updateTeacherRes.message,
+      grouping: true,
+      type: "success",
+    });
+    dialogTableUpdateVisible.value = false;
+    getTeacherInfo();
+  }
+}
+//查询
+//查询关键字
+let searchvalue = ref("");
+async function selectTeacher() {
+  let search = searchvalue.value;
+  let keyword = { search };
+  console.log(keyword);
+  let searchRes = await proxy.$http({
+    method: "post",
+    url: "/teacher/searchTeacher",
+    data: keyword,
+  });
+  console.log(searchRes.data);
+  tableData.value = searchRes.data;
 }
 </script>
 
@@ -225,10 +416,11 @@ function handleDelete() {
 
 .el-pagination {
   /* display: block; */
-  position: absolute;
+  /* position: absolute;
   bottom: 30px;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%); */
+  margin-top: 20px;
 }
 /* .btn {
   margin-top: 100px;

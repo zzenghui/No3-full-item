@@ -18,9 +18,9 @@ import { ElLoading } from 'element-plus'
 const server = axios.create({
     baseURL: 'http://localhost:3000',
     timeout: 1000,
-    headers: {
-        "Content-Type": "application/json;charset=utf-8"
-    }
+    // headers: {
+    //     "Content-Type": "application/json;charset=utf-8"
+    // }
 })
 
 let loadingobj = null
@@ -40,7 +40,7 @@ server.interceptors.response.use(response => {
     return response.data
 }, err => {
     ElMessage({
-        message: "网络错误",
+        message: "请求错误",
         grouping: true,
         type: "warning",
     });

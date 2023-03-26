@@ -41,7 +41,6 @@ router.post('/api/register', (req, res) => {
 })
 
 
-
 //登录接口
 router.post('/api/login', (req, res) => {
   let userInfo = req.body
@@ -99,6 +98,109 @@ router.get('/api/getinfo', (req, res) => {
 
 })
 
+
+//添加学生信息
+router.post('/addStudent', (req, res) => {
+  let bedname = req.body.dormitoryname
+  let sql = 'select * from bedroom where bedroomname = ?'
+  db.query(sql, bedname, (err, result) => {
+    if (err) return console.log(err.message);
+    if (result[0].num >= result[0].max) {
+      console.log('人数已满');
+      res.send({
+        status: 1,
+        message: '该宿舍人数已满'
+      })
+    } else {
+      // let nowNum = result[0].num + 1
+      // console.log(nowNum);
+      // db.query('update bedroom set num = ? where bedroomname = ?', [nowNum, bedname], (err, result1) => {
+      //   if (err) return console.log(err.message);
+      //   console.log(result1);
+      let classname = req.body.classname
+      let sql = 'select * from class where classname = ?'
+      db.query(sql, classname, (err, result2) => {
+        if (err) return console.log(err.message);
+        // db.query('update class set numberP = ? where classname = ?', [result2[0].numberP + 1, classname], (err, result3) => {
+        //   if (err) return console.log(err.message);
+        let userInfo = req.body
+        console.log(userInfo);
+        let sqlSele = 'select * from users where username = ?'
+        db.query(sqlSele, userInfo.username, (err, data) => {
+          if (err) return
+          if (data.length > 0) {
+            //用户名称已经存在
+            res.send({
+              status: 1,
+              message: '用户名已经存在'
+            })
+          } else {
+            //用户名不存在
+            userInfo.password = md5(userInfo.password)
+            console.log(userInfo);
+            let sqlIns = 'insert into users  set ?';
+            let nowNum = result[0].num + 1
+            console.log(nowNum);
+            db.query('update bedroom set num = ? where bedroomname = ?', [nowNum, bedname], (err, result1) => {
+              if (err) return console.log(err.message);
+              console.log(result1);
+            })
+            db.query('update class set numberP = ? where classname = ?', [result2[0].numberP + 1, classname], (err, result3) => {
+              if (err) return console.log(err.message);
+            })
+            db.query(sqlIns, userInfo, (err, dataRes) => {
+              console.log(err);
+              if (err) return
+              res.send({
+                status: 0,
+                message: "注册成功"
+              })
+            })
+          }
+        })
+
+        // })
+      })
+      // })
+    }
+  })
+})
+
+//获取学生信息
+router.post('/getStudent', (req, res) => {
+  let id = req.body.id
+  let sql = 'select * from users where tid = ?'
+  db.query(sql, id, (err, result) => {
+    if (err) return console.log(err.message);
+    console.log(result);
+    res.send({
+      status: 0,
+      data: result
+    })
+  })
+})
+
+//查询学生
+router.post('/searchStu', (req, res) => {
+  let keyword = req.body.keyword
+  let id = req.body.id
+  keyword = '%' + keyword + '%'
+  let sql = 'select * from users where username like ? and tid = ?'
+  db.query(sql, [keyword, id], (err, result) => {
+    if (err) return console.log(err.message);
+    if (result.length > 0) {
+      res.send({
+        status: 0,
+        data: result
+      })
+    } else {
+      res.send({
+        status: 1,
+        message: '没有查到匹配的'
+      })
+    }
+  })
+})
 
 
 module.exports = router;

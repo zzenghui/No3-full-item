@@ -2,10 +2,11 @@
   <div class="all">
     <div class="useTable">
       <el-button type="primary" class="btn" @click="dialogTableVisible = true"
-        >新增班级</el-button
+        >新增宿舍</el-button
       >
-      <el-input placeholder="请输入用户名查询"></el-input>
-      <el-button type="primary">查询</el-button>
+      <el-input placeholder="请输入宿舍名查询" v-model="keyword"></el-input>
+      <el-button type="primary" @click="searchBedroom">查询</el-button>
+      <el-button type="primary" @click="getBedroomInfo">查看全部</el-button>
     </div>
 
     <!-- 表格 -->
@@ -18,20 +19,23 @@
       <el-table-column type="selection" width="100" />
       <el-table-column label="创建时间" property="createtime" width="200">
       </el-table-column>
-      <el-table-column property="username" label="用户名" width="150" />
-      <el-table-column property="sno" label="学号" width="150" />
-      <el-table-column property="dormitoryId" label="宿舍号" width="130" />
-      <el-table-column property="className" label="班级" width="130" />
-      <el-table-column property="teacher" label="班主任" width="180" />
+      <el-table-column property="bedroomname" label="宿舍号" width="150" />
+      <el-table-column property="tname" label="负责管理员" width="150" />
+      <el-table-column property="type" label="宿舍类型" width="130" />
+      <el-table-column property="max" label="宿舍上限人数" width="130" />
+      <el-table-column property="num" label="宿舍居住人数" width="130" />
+
       <el-table-column label="操作" width="220">
         <template #default="scope">
-          <el-button size="small" @click="handleEdit(scope.row.date)"
-            >Edit</el-button
+          <el-button
+            size="small"
+            @click="showStudent(scope.row.id, scope.row.num)"
+            >查看人员</el-button
           >
           <el-button
             size="small"
             type="danger"
-            @click="handleDelete(scope.row.date)"
+            @click="deleteBedroom(scope.row.id, scope.row.num)"
             >Delete</el-button
           >
         </template>
@@ -44,58 +48,82 @@
 
   <el-dialog v-model="dialogTableVisible" title="新增管理员">
     <el-form>
-      <el-form-item label="学号" :label-width="formLabelWidth">
-        <el-input v-model="studentObj.username" autocomplete="off" />
-      </el-form-item>
-
-      <el-form-item label="年龄" :label-width="formLabelWidth">
-        <el-input type="number" v-model="studentObj.age" autocomplete="off" />
-      </el-form-item>
-
-      <el-form-item label="政治面貌" :label-width="formLabelWidth">
-        <el-select v-model="studentObj.Political" placeholder="请输入政治面貌">
-          <el-option label="群众" value="群众" />
-          <el-option label="共青团员" value="共青团员" />
-          <el-option label="预备党员" value="预备党员" />
-          <el-option label="党员" value="党员" />
+      <el-form-item label="宿舍楼号" :label-width="formLabelWidth">
+        <el-select v-model="bedroomObj.louhao" placeholder="请输入宿舍楼号">
+          <el-option
+            v-for="(p, index) in 30"
+            :key="index"
+            :label="`${p > 10 ? p : '0' + p}栋`"
+            :value="`${p > 10 ? p : '0' + p}`"
+          />
         </el-select>
       </el-form-item>
 
-      <el-form-item label="宿舍分配" :label-width="formLabelWidth">
-        <el-select v-model="studentObj.Political" placeholder="请输入宿舍号">
-          <el-option label="宿舍1号" value="宿舍1号" />
-          <el-option label="宿舍2号" value="宿舍2号" />
-          <el-option label="宿舍3号" value="宿舍3号" />
-          <el-option label="宿舍4号" value="宿舍4号" />
+      <el-form-item label="宿舍楼层" :label-width="formLabelWidth">
+        <el-select v-model="bedroomObj.louceng" placeholder="请输入宿舍楼层">
+          <el-option
+            v-for="(p, index) in 30"
+            :key="index"
+            :label="`${p > 10 ? p : '0' + p}楼`"
+            :value="`${p > 10 ? p : '0' + p}`"
+          />
         </el-select>
       </el-form-item>
 
-      <el-form-item label="学生班级" :label-width="formLabelWidth">
-        <el-select v-model="studentObj.Political" placeholder="请输入宿舍号">
-          <el-option label="宿舍1号" value="宿舍1号" />
-          <el-option label="宿舍2号" value="宿舍2号" />
-          <el-option label="宿舍3号" value="宿舍3号" />
-          <el-option label="宿舍4号" value="宿舍4号" />
+      <el-form-item label="宿舍号" :label-width="formLabelWidth">
+        <el-select v-model="bedroomObj.hao" placeholder="请输入宿舍号">
+          <el-option
+            v-for="(p, index) in 30"
+            :key="index"
+            :label="`${p > 10 ? p : '0' + p}楼`"
+            :value="`${p > 10 ? p : '0' + p}`"
+          />
         </el-select>
       </el-form-item>
 
-      <el-radio-group v-model="studentObj.sex">
-        <el-radio :label="0">男</el-radio>
-        <el-radio :label="1">女</el-radio>
-        <el-radio :label="2" disabled>未知</el-radio>
-      </el-radio-group>
+      <el-form-item label="宿舍人数" :label-width="formLabelWidth">
+        <el-input type="number" v-model="bedroomObj.max" autocomplete="off" />
+      </el-form-item>
+
+      <el-form-item label="宿舍类型" :label-width="formLabelWidth">
+        <el-select v-model="bedroomObj.type" placeholder="请输入宿舍类型">
+          <el-option label="男" value="男" />
+          <el-option label="女" value="女" />
+        </el-select>
+      </el-form-item>
     </el-form>
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="dialogTableVisible = false">取消</el-button>
-        <el-button type="primary" @click="addTeacher"> 确认 </el-button>
+        <el-button type="primary" @click="addBedroom"> 确认 </el-button>
       </span>
     </template>
+  </el-dialog>
+
+  <!-- 删除的dialog -->
+  <el-dialog v-model="centerDialogVisible" title="Warning" width="30%" center>
+    <span> 删除后教室信息将全部删除,确定要删除么? </span>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="centerDialogVisible = false">Cancel</el-button>
+        <el-button type="primary" @click="surehandleDelete">
+          Confirm
+        </el-button>
+      </span>
+    </template>
+  </el-dialog>
+
+  <!-- 查看宿舍人数 -->
+  <el-dialog v-model="dialogshowStudentTableVisible" title="宿舍人员">
+    <el-table :data="gridData">
+      <el-table-column property="username" label="姓名" width="200" />
+      <el-table-column property="classname" label="班级" />
+    </el-table>
   </el-dialog>
 </template>
 
 <script setup>
-import { reactive, ref, getCurrentInstance } from "vue";
+import { reactive, ref, getCurrentInstance, onMounted } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { nanoid } from "nanoid";
 import date from "../utils/data";
@@ -103,59 +131,154 @@ let { proxy } = getCurrentInstance();
 
 const dialogTableVisible = ref(false);
 const formLabelWidth = "140px";
+const centerDialogVisible = ref(false);
+const dialogshowStudentTableVisible = ref(false);
+//宿舍数据
+let tableData = ref([]);
 
-//学生数据
-const tableData = [
+onMounted(() => {
+  getBedroomInfo();
+});
+
+//获取宿舍信息
+async function getBedroomInfo() {
+  let id = JSON.parse(localStorage.getItem("user")).id;
+
+  if (id == 1) {
+    let res = await proxy.$http({
+      method: "get",
+      url: "/bedroom/getBedroom",
+    });
+    console.log(res.data);
+    tableData.value = res.data;
+  } else {
+    let res = await proxy.$http({
+      method: "post",
+      url: "/bedroom/getAdminBedroom",
+      data: { id },
+    });
+    tableData.value = res.data;
+    console.log(res);
+  }
+}
+
+//宿舍信息
+let bedroomObj = reactive({
+  louhao: "",
+  louceng: "",
+  hao: "",
+  max: "",
+  type: "",
+});
+
+//添加宿舍
+async function addBedroom() {
+  let bedroomObjInfo = {
+    bedroomname: `${bedroomObj.louhao}#${bedroomObj.louceng}${bedroomObj.hao}`,
+    max: bedroomObj.max,
+    num: 0,
+    type: bedroomObj.type,
+    tid: JSON.parse(localStorage.getItem("user")).id,
+    tname: JSON.parse(localStorage.getItem("user")).username,
+    createtime: date(),
+  };
+  let res = await proxy.$http({
+    method: "post",
+    url: "/bedroom/addBedroom",
+    data: bedroomObjInfo,
+  });
+  if (res.status == 0) {
+    ElMessage({
+      message: "添加成功",
+      grouping: true,
+      type: "success",
+    });
+    getBedroomInfo();
+    dialogTableVisible.value = false;
+  } else {
+    ElMessage({
+      message: "该宿舍已经创建",
+      grouping: true,
+      type: "error",
+    });
+  }
+  console.log(res);
+}
+
+//宿舍没有重新编辑
+//查看宿舍学生
+const gridData = [
   {
-    createtime: "2023-01-22",
-    sno: "123456",
-    username: "zzh",
-    dormitoryId: "宿舍一号",
-    className: "2206班",
-    teacher: "小刘",
+    username: "John Smith",
+    classname: "No.1518,  Jinshajiang Road, Putuo District",
+  },
+  {
+    username: "John Smith",
+    classname: "No.1518,  Jinshajiang Road, Putuo District",
+  },
+  {
+    username: "John Smith",
+    classname: "No.1518,  Jinshajiang Road, Putuo District",
+  },
+  {
+    username: "John Smith",
+    classname: "No.1518,  Jinshajiang Road, Putuo District",
   },
 ];
 
-//学生信息
-let studentObj = reactive({
-  sno: "",
-  age: "",
-  sex: "",
-  Political: "",
-});
+function showStudent(a, b) {
+  //查找所有相同宿舍号的学生
+  dialogshowStudentTableVisible.value = true;
+}
 
-//添加学生
-async function addTeacher() {
-  let admin = {
-    nanoid: nanoid(),
-    username: studentObj.sno,
-    password: studentObj.sno,
-    isAdmin: 0,
-    isTeacher: 1,
-    isStudent: 0,
-    createtime: date(),
-    avar: "https://gss0.baidu.com/-vo3dSag_xI4khGko9WTAnF6hhy/zhidao/pic/item/8b82b9014a90f60376baa9db3912b31bb051ed27.jpg",
-    age: studentObj.age,
-    sex: studentObj.sex,
-    Political: studentObj.Political,
-    dormitoryId: 0,
-    classId: 0,
-    sno: "",
-    employeeId: "",
-    classList: "[]",
-    Qualification: 0,
-  };
-  console.log(admin);
+//删除
+let bid;
+let bnum;
+function deleteBedroom(id, num) {
+  centerDialogVisible.value = true;
+  bid = id;
+  bnum = num;
+}
+//确认删除
+async function surehandleDelete() {
+  if (bnum > 0) {
+    ElMessage({
+      message: "该宿舍还存在学生,无法强制删除",
+      grouping: true,
+      type: "error",
+    });
+  } else {
+    let obj = { bid };
+    console.log(obj);
+    let res = await proxy.$http({
+      method: "post",
+      url: "/bedroom/deleteBedroom",
+      data: { bid },
+    });
+    if (res.status == 0) {
+      ElMessage({
+        message: "删除成功",
+        grouping: true,
+        type: "success",
+      });
+      getBedroomInfo();
+      centerDialogVisible.value = false;
+    }
+  }
+}
 
+//查询功能
+let keyword = ref("");
+async function searchBedroom() {
   let res = await proxy.$http({
     method: "post",
-    url: "/users/api/register",
-    data: admin,
+    url: "/bedroom/searchBedroom",
+    data: { keyword: keyword.value },
   });
-
   if (res.status == 0) {
+    tableData.value = res.data;
     ElMessage({
-      message: "注册成功",
+      message: "查询成功",
       grouping: true,
       type: "success",
     });
@@ -166,18 +289,6 @@ async function addTeacher() {
       type: "error",
     });
   }
-
-  dialogTableVisible.value = false;
-}
-
-//编辑
-function handleEdit(a) {
-  alert(a);
-}
-
-//删除
-function handleDelete() {
-  alert(222);
 }
 </script>
 
@@ -218,10 +329,7 @@ function handleDelete() {
 
 .el-pagination {
   /* display: block; */
-  position: absolute;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%);
+  margin-top: 20px;
 }
 /* .btn {
   margin-top: 100px;
