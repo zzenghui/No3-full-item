@@ -1,12 +1,18 @@
 <template>
   <div class="all">
     <div class="useTable">
-      <el-button type="primary" class="btn" @click="dialogTableVisible = true"
-        >新增宿舍</el-button
-      >
-      <el-input placeholder="请输入宿舍名查询" v-model="keyword"></el-input>
-      <el-button type="primary" @click="searchBedroom">查询</el-button>
-      <el-button type="primary" @click="getBedroomInfo">查看全部</el-button>
+      <div>
+        <el-button type="primary" class="btn" @click="dialogTableVisible = true"
+          >新增宿舍</el-button
+        >
+      </div>
+      <div>
+        <el-input placeholder="请输入宿舍名查询" v-model="keyword"></el-input>
+        <el-button type="primary" @click="searchBedroom" :icon="Search"
+          >查询</el-button
+        >
+        <el-button type="primary" @click="getBedroomInfo">查看全部</el-button>
+      </div>
     </div>
 
     <!-- 表格 -->
@@ -14,30 +20,58 @@
       ref="multipleTableRef"
       :data="tableData"
       @selection-change="handleSelectionChange"
-      height="500"
+      class="animate__animated animate__backInDown"
     >
-      <el-table-column type="selection" width="100" />
-      <el-table-column label="创建时间" property="createtime" width="200">
+      <el-table-column type="selection" width="100" align="center" />
+      <el-table-column
+        label="创建时间"
+        property="createtime"
+        width="200"
+        align="center"
+      >
       </el-table-column>
-      <el-table-column property="bedroomname" label="宿舍号" width="150" />
-      <el-table-column property="tname" label="负责管理员" width="150" />
-      <el-table-column property="type" label="宿舍类型" width="130" />
-      <el-table-column property="max" label="宿舍上限人数" width="130" />
-      <el-table-column property="num" label="宿舍居住人数" width="130" />
+      <el-table-column
+        property="bedroomname"
+        label="宿舍号"
+        width="150"
+        align="center"
+      />
+      <el-table-column
+        property="tname"
+        label="负责管理员"
+        width="150"
+        align="center"
+      />
+      <el-table-column
+        property="type"
+        label="宿舍类型"
+        width="130"
+        align="center"
+      />
+      <el-table-column
+        property="max"
+        label="宿舍上限人数"
+        width="130"
+        align="center"
+      />
+      <el-table-column
+        property="num"
+        label="宿舍居住人数"
+        width="130"
+        align="center"
+      />
 
-      <el-table-column label="操作" width="220">
+      <el-table-column label="操作" width="220" align="center" fixed="right">
         <template #default="scope">
-          <el-button
-            size="small"
-            @click="showStudent(scope.row.id, scope.row.num)"
+          <el-button size="small" @click="showStudent(scope.row.bedroomname)"
             >查看人员</el-button
           >
           <el-button
             size="small"
             type="danger"
             @click="deleteBedroom(scope.row.id, scope.row.num)"
-            >Delete</el-button
-          >
+            :icon="Delete"
+          ></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -46,7 +80,7 @@
     <el-pagination background layout="prev, pager, next" :total="100" />
   </div>
 
-  <el-dialog v-model="dialogTableVisible" title="新增管理员">
+  <el-dialog v-model="dialogTableVisible" title="新增寝室">
     <el-form>
       <el-form-item label="宿舍楼号" :label-width="formLabelWidth">
         <el-select v-model="bedroomObj.louhao" placeholder="请输入宿舍楼号">
@@ -115,14 +149,72 @@
 
   <!-- 查看宿舍人数 -->
   <el-dialog v-model="dialogshowStudentTableVisible" title="宿舍人员">
-    <el-table :data="gridData">
-      <el-table-column property="username" label="姓名" width="200" />
-      <el-table-column property="classname" label="班级" />
+    <el-table :data="gridData" class="el_table_num" size="default">
+      <el-table-column
+        class="el_table_item"
+        type="index"
+        label="床号"
+        width="100"
+        align="center"
+      />
+      <el-table-column
+        class="el_table_item"
+        property="username"
+        label="姓名"
+        width="150"
+        align="center"
+      />
+      <el-table-column
+        class="el_table_item"
+        property="classname"
+        label="班级"
+        width="200"
+        align="center"
+      />
+      <el-table-column
+        class="el_table_item"
+        label="查寝情况"
+        width="150"
+        property="state"
+        align="center"
+      />
+      <el-table-column label="查寝情况" width="220" align="center">
+        <template #default="scope">
+          <el-button
+            size="small"
+            type="primary"
+            @click="
+              handlestate(scope.row.username, '正常', scope.row.dormitoryname)
+            "
+            >正常</el-button
+          >
+          <el-button
+            size="small"
+            type="default"
+            @click="
+              handlestate(scope.row.username, '请假', scope.row.dormitoryname)
+            "
+            >请假</el-button
+          >
+          <el-button
+            size="small"
+            type="danger"
+            @click="
+              handlestate(scope.row.username, '异常', scope.row.dormitoryname)
+            "
+            >异常</el-button
+          >
+        </template>
+      </el-table-column>
     </el-table>
+    <div style="margin-top: 20px">
+      请假人数 {{ leave }}, 正常人数 {{ normal }}, 异常人数{{ abnormal }}
+    </div>
   </el-dialog>
 </template>
 
 <script setup>
+import { Delete, Edit, Search } from "@element-plus/icons-vue";
 import { reactive, ref, getCurrentInstance, onMounted } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { nanoid } from "nanoid";
@@ -139,6 +231,19 @@ let tableData = ref([]);
 onMounted(() => {
   getBedroomInfo();
 });
+
+//忽略el-table 出错
+function ignoreLoopLimit() {
+  const e = window.onerror;
+  window.onerror = function (err) {
+    if (err === "ResizeObserver loop limit exceeded") {
+      console.warn("Ignored: ResizeObserver loop limit exceeded");
+      return false;
+    } else {
+      return e(...arguments);
+    }
+  };
+}
 
 //获取宿舍信息
 async function getBedroomInfo() {
@@ -181,6 +286,7 @@ async function addBedroom() {
     tid: JSON.parse(localStorage.getItem("user")).id,
     tname: JSON.parse(localStorage.getItem("user")).username,
     createtime: date(),
+    state: "",
   };
   let res = await proxy.$http({
     method: "post",
@@ -205,30 +311,32 @@ async function addBedroom() {
   console.log(res);
 }
 
+//查看寝室学生
+
 //宿舍没有重新编辑
 //查看宿舍学生
-const gridData = [
-  {
-    username: "John Smith",
-    classname: "No.1518,  Jinshajiang Road, Putuo District",
-  },
-  {
-    username: "John Smith",
-    classname: "No.1518,  Jinshajiang Road, Putuo District",
-  },
-  {
-    username: "John Smith",
-    classname: "No.1518,  Jinshajiang Road, Putuo District",
-  },
-  {
-    username: "John Smith",
-    classname: "No.1518,  Jinshajiang Road, Putuo District",
-  },
-];
-
-function showStudent(a, b) {
+let gridData = ref([]);
+//请假人数
+let leave = ref(0);
+//正常人数
+let normal = ref(0);
+//异常人数
+let abnormal = ref(0);
+async function showStudent(a) {
+  console.log(a);
+  let obj = { bedroomname: a };
   //查找所有相同宿舍号的学生
   dialogshowStudentTableVisible.value = true;
+  let res = await proxy.$http({
+    method: "post",
+    url: "/bedroom/showStu",
+    data: obj,
+  });
+  console.log(res.data);
+  leave.value = res.data.filter((item) => item.state == "请假").length;
+  normal.value = res.data.filter((item) => item.state == "正常").length;
+  abnormal.value = res.data.filter((item) => item.state == "异常").length;
+  gridData.value = res.data;
 }
 
 //删除
@@ -290,10 +398,29 @@ async function searchBedroom() {
     });
   }
 }
+
+//修改学生出勤状态
+async function handlestate(a, b, c) {
+  console.log(a);
+  let res = await proxy.$http({
+    method: "post",
+    url: "/users/changeStuState",
+    data: { uname: a, state: b },
+  });
+  if (res.status == 0) {
+    ElMessage({
+      message: "操作成功",
+      grouping: true,
+      type: "success",
+    });
+    showStudent(c);
+  }
+}
 </script>
 
 <style scoped>
 .all {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -329,20 +456,30 @@ async function searchBedroom() {
 
 .el-pagination {
   /* display: block; */
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
   margin-top: 20px;
+  justify-self: flex-end;
 }
 /* .btn {
   margin-top: 100px;
   margin-left: 20px;
 } */
 .useTable {
-  margin-top: 80px;
-  margin-left: 250px;
-  margin-bottom: 30px;
-  width: 100%;
+  width: 85%;
+  display: flex;
+  width: 80%;
+  margin: 0 auto;
+  justify-content: space-between;
+  margin: 30px 0;
 }
 
-.useTable .el-input {
-  margin-left: 250px;
+.el_table_num {
+  width: 120% !important;
+}
+.el_table_item {
+  width: 33% !important;
 }
 </style>

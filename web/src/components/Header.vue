@@ -2,7 +2,7 @@
   <div class="flex">
     <h1 class="title">学生宿舍管理系统</h1>
   </div>
-
+ 
   <div class="flex rela">
     <!-- <img
       :src="userInfo.avar"

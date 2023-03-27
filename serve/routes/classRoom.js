@@ -56,7 +56,7 @@ router.post('/teacherGetClassInfo', (req, res) => {
 //管理员获取班级信息
 router.post('/adminGetClassInfo', (req, res) => {
     let sql = 'select * from class '
-    db.query(sql, id, (err, result) => {
+    db.query(sql, (err, result) => {
         if (err) console.log(err.message);
         res.send({
             status: 0,

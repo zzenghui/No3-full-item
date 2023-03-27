@@ -1,12 +1,18 @@
 <template>
   <div class="all">
     <div class="useTable">
-      <el-button type="primary" class="btn" @click="dialogTableVisible = true"
-        >新增班级</el-button
-      >
-      <el-input placeholder="请输入用户名查询" v-model="keyword"></el-input>
-      <el-button type="primary" @click="searchclass">查询</el-button>
-      <el-button type="primary" @click="getClassInfo">查看全部</el-button>
+      <div>
+        <el-button type="primary" class="btn" @click="dialogTableVisible = true"
+          >新增班级</el-button
+        >
+      </div>
+      <div>
+        <el-input placeholder="请输入用户名查询" v-model="keyword"></el-input>
+        <el-button type="primary" @click="searchclass" :icon="Search"
+          >查询</el-button
+        >
+        <el-button type="primary" @click="getClassInfo">查看全部</el-button>
+      </div>
     </div>
 
     <!-- 表格 -->
@@ -14,7 +20,7 @@
       ref="multipleTableRef"
       :data="tableData"
       @selection-change="handleSelectionChange"
-      height="500"
+      class="animate__animated animate__zoomInLeft"
     >
       <el-table-column type="selection" width="100" />
       <el-table-column label="创建时间" property="createtime" width="200">
@@ -28,6 +34,8 @@
         <template #default="scope">
           <el-button
             size="small"
+            type="primary"
+            :icon="Edit"
             @click="
               handleEdit(
                 scope.row.classname,
@@ -35,14 +43,13 @@
                 scope.row.subject
               )
             "
-            >Edit</el-button
-          >
+          ></el-button>
           <el-button
             size="small"
             type="danger"
+            :icon="Delete"
             @click="handleDelete(scope.row.id, scope.row.numberP)"
-            >Delete</el-button
-          >
+          ></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -54,7 +61,14 @@
   <el-dialog v-model="dialogTableVisible" title="新增管理员">
     <el-form>
       <el-form-item label="班级名称" :label-width="formLabelWidth">
-        <el-input v-model="classObj.classname" autocomplete="off" />
+        <el-tooltip
+          content="班级名称确定后将无法修改,请谨慎填写"
+          placement="right"
+          effect="light"
+          trigger="click"
+        >
+          <el-input v-model="classObj.classname" />
+        </el-tooltip>
       </el-form-item>
 
       <el-form-item label="班级年级" :label-width="formLabelWidth">
@@ -120,6 +134,7 @@
 </template>
 
 <script setup>
+import { Delete, Edit, Search } from "@element-plus/icons-vue";
 import { reactive, ref, getCurrentInstance, onMounted } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { nanoid } from "nanoid";
@@ -303,6 +318,7 @@ async function searchclass() {
 
 <style scoped>
 .all {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -338,24 +354,34 @@ async function searchclass() {
 
 .el-pagination {
   /* display: block; */
-  /* position: absolute;
+  position: absolute;
   bottom: 30px;
   left: 50%;
-  transform: translateX(-50%); */
+  transform: translateX(-50%);
   margin-top: 20px;
+  justify-self: flex-end;
 }
 /* .btn {
   margin-top: 100px;
   margin-left: 20px;
 } */
 .useTable {
-  margin-top: 80px;
-  margin-left: 250px;
-  margin-bottom: 30px;
-  width: 100%;
+  width: 85%;
+  display: flex;
+  width: 80%;
+  margin: 0 auto;
+  justify-content: space-between;
+  margin: 30px 0;
 }
 
-.useTable .el-input {
-  margin-left: 250px;
+.el-popper.is-customized {
+  /* Set padding to ensure the height is 32px */
+  padding: 6px 12px;
+  background: linear-gradient(90deg, rgb(159, 229, 151), rgb(204, 229, 129));
+}
+
+.el-popper.is-customized .el-popper__arrow::before {
+  background: linear-gradient(45deg, #b2e68d, #bce689);
+  right: 0;
 }
 </style>

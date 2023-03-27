@@ -1,12 +1,111 @@
 <template>
   <div class="account">
-    <el-carousel :interval="3000" type="card" height="300px">
-      <el-carousel-item v-for="item in 6" :key="item">
-        <h3 text="2xl" justify="center">{{ item }}</h3>
+    <div class="tong">
+      <el-row :gutter="16">
+        <el-col :span="8">
+          <div class="statistic-card">
+            <el-statistic :value="98500">
+              <template #title>
+                <div style="display: inline-flex; align-items: center">
+                  Daily active users
+                  <el-tooltip
+                    effect="dark"
+                    content="Number of users who logged into the product in one day"
+                    placement="top"
+                  >
+                    <el-icon style="margin-left: 4px" :size="12">
+                      <Warning />
+                    </el-icon>
+                  </el-tooltip>
+                </div>
+              </template>
+            </el-statistic>
+            <div class="statistic-footer">
+              <div class="footer-item">
+                <span>than yesterday</span>
+                <span class="green">
+                  24%
+                  <el-icon>
+                    <CaretTop />
+                  </el-icon>
+                </span>
+              </div>
+            </div>
+          </div>
+        </el-col>
+        <el-col :span="8">
+          <div class="statistic-card">
+            <el-statistic :value="693700">
+              <template #title>
+                <div style="display: inline-flex; align-items: center">
+                  Monthly Active Users
+                  <el-tooltip
+                    effect="dark"
+                    content="Number of users who logged into the product in one month"
+                    placement="top"
+                  >
+                    <el-icon style="margin-left: 4px" :size="12">
+                      <Warning />
+                    </el-icon>
+                  </el-tooltip>
+                </div>
+              </template>
+            </el-statistic>
+            <div class="statistic-footer">
+              <div class="footer-item">
+                <span>month on month</span>
+                <span class="red">
+                  12%
+                  <el-icon>
+                    <CaretBottom />
+                  </el-icon>
+                </span>
+              </div>
+            </div>
+          </div>
+        </el-col>
+        <el-col :span="8">
+          <div class="statistic-card">
+            <el-statistic :value="72000" title="New transactions today">
+              <template #title>
+                <div style="display: inline-flex; align-items: center">
+                  New transactions today
+                </div>
+              </template>
+            </el-statistic>
+            <div class="statistic-footer">
+              <div class="footer-item">
+                <span>than yesterday</span>
+                <span class="green">
+                  16%
+                  <el-icon>
+                    <CaretTop />
+                  </el-icon>
+                </span>
+              </div>
+              <div class="footer-item">
+                <el-icon :size="14">
+                  <ArrowRight />
+                </el-icon>
+              </div>
+            </div>
+          </div>
+        </el-col>
+      </el-row>
+    </div>
+    <div class="line animate__animated animate__bounceInDown" ref="line"></div>
+    <div class="pie animate__animated animate__bounceInUp" ref="pie"></div>
+    <el-carousel :interval="3000" type="card" height="150px">
+      <el-carousel-item>
+        <h1>1</h1>
+      </el-carousel-item>
+      <el-carousel-item>
+        <h1>2</h1>
+      </el-carousel-item>
+      <el-carousel-item>
+        <h1>1</h1>
       </el-carousel-item>
     </el-carousel>
-    <div class="line" ref="line"></div>
-    <div class="pie" ref="pie"></div>
   </div>
 </template>
 
@@ -24,13 +123,13 @@ onMounted(() => {
 
   let option = reactive({
     title: {
-      text: "Stacked Line",
+      text: "宿舍统计",
     },
     tooltip: {
       trigger: "axis",
     },
     legend: {
-      data: ["Email", "Union Ads", "Video Ads", "Direct", "Search Engine"],
+      data: ["正常", "异常", "请假"],
     },
     grid: {
       left: "3%",
@@ -53,34 +152,19 @@ onMounted(() => {
     },
     series: [
       {
-        name: "Email",
+        name: "正常",
         type: "line",
-        stack: "Total",
-        data: [120, 132, 101, 134, 90, 230, 210],
+        data: [800, 700, 900, 850, 900, 860, 900],
       },
       {
-        name: "Union Ads",
+        name: "异常",
         type: "line",
-        stack: "Total",
-        data: [220, 182, 191, 234, 290, 330, 310],
+        data: [150, 100, 50, 100, 10, 40, 10],
       },
       {
-        name: "Video Ads",
+        name: "请假",
         type: "line",
-        stack: "Total",
-        data: [150, 232, 201, 154, 190, 330, 410],
-      },
-      {
-        name: "Direct",
-        type: "line",
-        stack: "Total",
-        data: [320, 332, 301, 334, 390, 330, 320],
-      },
-      {
-        name: "Search Engine",
-        type: "line",
-        stack: "Total",
-        data: [820, 932, 901, 934, 1290, 1330, 1320],
+        data: [50, 200, 50, 50, 90, 100, 90],
       },
     ],
   });
@@ -90,7 +174,7 @@ onMounted(() => {
   let myPieChart = echarts.init(proxy.$refs.pie);
   let optionPie = reactive({
     title: {
-      text: "Referer of a Website",
+      text: "查寝情况",
       subtext: "Fake Data",
       left: "center",
     },
@@ -107,11 +191,9 @@ onMounted(() => {
         type: "pie",
         radius: "50%",
         data: [
-          { value: 1048, name: "Search Engine" },
-          { value: 735, name: "Direct" },
-          { value: 580, name: "Email" },
-          { value: 484, name: "Union Ads" },
-          { value: 300, name: "Video Ads" },
+          { value: 1048, name: "正常" },
+          { value: 135, name: "请假" },
+          { value: 180, name: "夜不归宿" },
         ],
         emphasis: {
           itemStyle: {
@@ -155,7 +237,7 @@ onMounted(() => {
   float: left;
   width: 700px;
   height: 300px;
-  margin-top: 30px;
+  margin-top: 50px;
   margin-left: 100px;
 }
 
@@ -164,6 +246,53 @@ onMounted(() => {
   width: 450px;
   height: 348px;
   margin-left: 150px;
-  margin-top: 30px;
+  margin-top: 50px;
+}
+.tong {
+  width: 80%;
+  margin: 0 auto;
+}
+:global(h2#card-usage ~ .example .example-showcase) {
+  background-color: var(--el-fill-color) !important;
+}
+
+.el-statistic {
+  --el-statistic-content-font-size: 28px;
+}
+
+.statistic-card {
+  height: 100%;
+  padding: 20px;
+  border-radius: 4px;
+  background-color: var(--el-bg-color-overlay);
+}
+
+.statistic-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: var(--el-text-color-regular);
+  margin-top: 16px;
+}
+
+.statistic-footer .footer-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.statistic-footer .footer-item span:last-child {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 4px;
+}
+
+.green {
+  color: var(--el-color-success);
+}
+.red {
+  color: var(--el-color-error);
 }
 </style>

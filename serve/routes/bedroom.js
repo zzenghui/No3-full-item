@@ -116,5 +116,32 @@ router.post('/searchBedroom', (req, res) => {
 //     })
 // })
 
+//查看同寝室人员
+router.post('/showStu', (req, res) => {
+    let bedroomname = req.body.bedroomname
+    let sql = 'select * from users where dormitoryname = ?'
+    db.query(sql, bedroomname, (err, result) => {
+        if (err) return console.log(err.message);
+        res.send({
+            status: 0,
+            data: result
+        })
+    })
+})
+
+//获取寝室人数得总信息
+router.post('/getBedroomInfoAll', (req, res) => {
+    let id = req.body.id
+    if (id == 1) {
+        //超级管理员操作
+
+    } else {
+        //非超级管理员操作
+        db.query('select * from bedroom where tid = ?', id, (err, result) => {
+            if (err) return console.log(err.message);
+        })
+    }
+})
+
 
 module.exports = router

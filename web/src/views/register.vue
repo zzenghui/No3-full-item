@@ -113,6 +113,9 @@ async function register() {
       headteacher: "",
       classname: "",
       dormitoryname: "",
+      tid: 0,
+      tname: "",
+      state: "",
     };
     let res = await proxy.$http({
       method: "post",

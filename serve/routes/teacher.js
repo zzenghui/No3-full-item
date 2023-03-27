@@ -51,7 +51,8 @@ router.post('/updateTeacher', (req, res) => {
 router.post('/searchTeacher', (req, res) => {
     let keyword = req.body.search
     console.log(keyword);
-    let sql = 'select * from users where username = ?'
+    keyword = "%" + keyword + "%"
+    let sql = 'select * from users where username like ?'
     db.query(sql, [keyword], (err, result) => {
         if (err) return console.log(err.message);
         console.log(result);
@@ -72,7 +73,7 @@ router.post('/searchTeacher', (req, res) => {
 
 //修改老师得班级列表
 router.post('/updateTeacherClass', (req, res) => {
-    
+
 })
 
 

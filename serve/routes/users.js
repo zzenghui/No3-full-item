@@ -169,15 +169,28 @@ router.post('/addStudent', (req, res) => {
 //获取学生信息
 router.post('/getStudent', (req, res) => {
   let id = req.body.id
-  let sql = 'select * from users where tid = ?'
-  db.query(sql, id, (err, result) => {
-    if (err) return console.log(err.message);
-    console.log(result);
-    res.send({
-      status: 0,
-      data: result
+  if (id == 1) {
+    let sql = 'select * from users where isStudent = 1'
+    db.query(sql, (err, result) => {
+      if (err) return console.log(err.message);
+      console.log(result);
+      res.send({
+        status: 0,
+        data: result
+      })
     })
-  })
+  } else {
+    let sql = 'select * from users where tid = ?'
+    db.query(sql, id, (err, result) => {
+      if (err) return console.log(err.message);
+      console.log(result);
+      res.send({
+        status: 0,
+        data: result
+      })
+    })
+  }
+
 })
 
 //查询学生
@@ -185,22 +198,89 @@ router.post('/searchStu', (req, res) => {
   let keyword = req.body.keyword
   let id = req.body.id
   keyword = '%' + keyword + '%'
-  let sql = 'select * from users where username like ? and tid = ?'
-  db.query(sql, [keyword, id], (err, result) => {
+  if (id == 1) {
+    let sql = 'select * from users where username like ? and isStudent = 1 '
+    db.query(sql, keyword, (err, result) => {
+      if (err) return console.log(err.message);
+      if (result.length > 0) {
+        res.send({
+          status: 0,
+          data: result
+        })
+      } else {
+        res.send({
+          status: 1,
+          message: '没有查到匹配的'
+        })
+      }
+    })
+  } else {
+
+    let sql = 'select * from users where username like ? and tid = ?'
+    db.query(sql, [keyword, id], (err, result) => {
+      if (err) return console.log(err.message);
+      if (result.length > 0) {
+        res.send({
+          status: 0,
+          data: result
+        })
+      } else {
+        res.send({
+          status: 1,
+          message: '没有查到匹配的'
+        })
+      }
+    })
+  }
+
+
+})
+
+// 删除一个学生
+router.post('/deleteStu', (req, res) => {
+  let data = req.body
+  //删除学生
+  db.query('delete from users where id = ?', data.id, (err, result) => {
     if (err) return console.log(err.message);
-    if (result.length > 0) {
+    //删除成功,修改寝室信息
+    db.query('select * from bedroom where bedroomname = ?', data.dormitoryname, (err, result1) => {
+      if (err) return console.log(err.message);
+      //查询成功
+      db.query('update bedroom set num = ? where bedroomname = ?', [result1[0].num - 1, data.dormitoryname], (err, result2) => {
+        if (err) return console.log(err.message);
+        //修改班级信息
+        db.query('select * from class where classname = ?', data.classname, (err, result3) => {
+          if (err) return console.log(err.message);
+          db.query('update class set numberP = ? where classname = ?', [result3[0].numberP - 1, data.classname], (err, result4) => {
+            if (err) return console.log(err.message);
+            res.send({
+              status: 0,
+              message: '删除成功'
+            })
+          })
+        })
+      })
+    })
+  })
+})
+
+//修改学生出勤情况
+router.post('/changeStuState', (req, res) => {
+  let uName = req.body.uname
+  let state = req.body.state
+  let sql = 'update users set state = ? where username = ?'
+  db.query(sql, [state, uName], (err, result) => {
+    if (err) return console.log(err.message);
+    console.log(result);
+    if (result.affectedRows == 1) {
       res.send({
         status: 0,
-        data: result
-      })
-    } else {
-      res.send({
-        status: 1,
-        message: '没有查到匹配的'
+        message: "修改成功"
       })
     }
   })
 })
+
 
 
 module.exports = router;

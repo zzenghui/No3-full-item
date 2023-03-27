@@ -1,12 +1,21 @@
 <template>
   <div class="all">
     <div class="useTable">
-      <el-button type="primary" class="btn" @click="dialogTableVisible = true"
-        >新增管理员</el-button
-      >
-      <el-input placeholder="请输入用户名查询" v-model="searchvalue"></el-input>
-      <el-button type="primary" @click="selectTeacher">查询</el-button>
-      <el-button type="primary" @click="getTeacherInfo">显示全部</el-button>
+      <div>
+        <el-button type="primary" class="btn" @click="dialogTableVisible = true"
+          >新增管理员</el-button
+        >
+      </div>
+      <div>
+        <el-input
+          placeholder="请输入用户名查询"
+          v-model="searchvalue"
+        ></el-input>
+        <el-button type="primary" @click="selectTeacher" :icon="Search"
+          >查询</el-button
+        >
+        <el-button type="primary" @click="getTeacherInfo">显示全部</el-button>
+      </div>
     </div>
 
     <!-- 表格 -->
@@ -14,23 +23,45 @@
       ref="multipleTableRef"
       :data="tableData"
       @selection-change="handleSelectionChange"
-      height="500"
+      class="animate__animated animate__bounceInLeft"
     >
-      <el-table-column type="selection" width="100" />
+      <el-table-column type="selection" width="100" align="center" />
 
-      <el-table-column label="创建时间" property="createtime" width="200">
+      <el-table-column
+        label="创建时间"
+        property="createtime"
+        width="200"
+        align="center"
+      >
       </el-table-column>
 
-      <el-table-column property="employeeId" label="职工号" width="150" />
-      <el-table-column property="username" label="用户名" width="150" />
+      <el-table-column
+        property="employeeId"
+        label="职工号"
+        width="150"
+        align="center"
+      />
+      <el-table-column
+        property="username"
+        label="用户名"
+        width="150"
+        align="center"
+      />
 
-      <el-table-column property="age" label="年龄" width="130" />
-      <el-table-column property="sex" label="性别" width="130" />
-      <el-table-column property="Political" label="政治面貌" width="180" />
+      <el-table-column property="age" label="年龄" width="130" align="center" />
+      <el-table-column property="sex" label="性别" width="130" align="center" />
+      <el-table-column
+        property="Political"
+        label="政治面貌"
+        width="180"
+        align="center"
+      />
 
-      <el-table-column label="操作" width="220">
+      <el-table-column label="操作" width="220" align="center">
         <template #default="scope">
           <el-button
+            type="primary"
+            :icon="Edit"
             size="small"
             @click="
               updateTeacher(
@@ -42,11 +73,11 @@
                 scope.row.sex
               )
             "
-            >Edit</el-button
-          >
+          ></el-button>
           <el-button
             size="small"
             type="danger"
+            :icon="Delete"
             @click="
               handleDialog(
                 scope.row.id,
@@ -54,8 +85,7 @@
                 scope.row.bedroomList
               )
             "
-            >Delete</el-button
-          >
+          ></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -65,7 +95,14 @@
   <el-dialog v-model="dialogTableVisible" title="新增管理员">
     <el-form>
       <el-form-item label="用户名" :label-width="formLabelWidth">
-        <el-input v-model="teacherObj.username" autocomplete="off" />
+        <el-tooltip
+          content="用户名确定后将无法修改,请谨慎填写"
+          placement="right"
+          effect="light"
+          trigger="click"
+        >
+          <el-input v-model="teacherObj.username" autocomplete="off" />
+        </el-tooltip>
       </el-form-item>
 
       <el-form-item label="密码" :label-width="formLabelWidth">
@@ -203,6 +240,8 @@
 </template>
 
 <script setup>
+import { Delete, Edit, Search } from "@element-plus/icons-vue";
+import Logo from "@/components/Logo";
 import { reactive, ref, getCurrentInstance, onMounted } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { nanoid } from "nanoid";
@@ -251,6 +290,7 @@ async function addTeacher() {
     dormitoryname: "",
     tid: 0,
     tname: "",
+    state: "",
   };
   console.log(admin);
 
@@ -379,18 +419,33 @@ async function selectTeacher() {
     data: keyword,
   });
   console.log(searchRes.data);
-  tableData.value = searchRes.data;
+  if (searchRes.status == 0) {
+    ElMessage({
+      message: "查询成功",
+      grouping: true,
+      type: "success",
+    });
+    tableData.value = searchRes.data;
+  } else {
+    ElMessage({
+      message: searchRes.message,
+      grouping: true,
+      type: "error",
+    });
+  }
 }
 </script>
 
 <style scoped>
 .all {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 90%;
   margin: 0 auto;
 }
+
 .el-button--text {
   margin-right: 15px;
 }
@@ -409,30 +464,31 @@ async function selectTeacher() {
 }
 
 .el-table {
-  width: 1300px !important;
+  width: 85% !important;
 
   /* margin-top: 150px; */
 }
 
 .el-pagination {
   /* display: block; */
-  /* position: absolute;
+  position: absolute;
   bottom: 30px;
   left: 50%;
-  transform: translateX(-50%); */
+  transform: translateX(-50%);
   margin-top: 20px;
+  justify-self: flex-end;
 }
 /* .btn {
   margin-top: 100px;
   margin-left: 20px;
 } */
 .useTable {
-  margin-top: 80px;
-  margin-left: 250px;
-  margin-bottom: 30px;
-  width: 100%;
+  width: 85%;
+  display: flex;
+  width: 80%;
+  margin: 0 auto;
+  justify-content: space-between;
+  margin: 30px 0;
 }
-.useTable .el-input {
-  margin-left: 250px;
-}
+
 </style>
