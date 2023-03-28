@@ -385,6 +385,7 @@ function updateStu() {}
   align-items: center;
   width: 90%;
   margin: 0 auto;
+  background-color: transparent !important;
 }
 .el-button--text {
   margin-right: 15px;
