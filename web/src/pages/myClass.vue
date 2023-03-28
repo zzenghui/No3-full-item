@@ -21,6 +21,7 @@
       :data="tableData"
       @selection-change="handleSelectionChange"
       class="animate__animated animate__zoomInLeft"
+      max-height="500px"
     >
       <el-table-column type="selection" width="100" />
       <el-table-column label="创建时间" property="createtime" width="200">

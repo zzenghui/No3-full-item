@@ -21,6 +21,7 @@
       :data="tableData"
       @selection-change="handleSelectionChange"
       class="animate__animated animate__backInDown"
+      max-height="500px"
     >
       <el-table-column type="selection" width="100" align="center" />
       <el-table-column

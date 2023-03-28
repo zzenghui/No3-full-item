@@ -24,6 +24,7 @@
       :data="tableData"
       @selection-change="handleSelectionChange"
       class="animate__animated animate__bounceInLeft"
+      max-height="500px"
     >
       <el-table-column type="selection" width="100" align="center" />
 
@@ -490,5 +491,4 @@ async function selectTeacher() {
   justify-content: space-between;
   margin: 30px 0;
 }
-
 </style>

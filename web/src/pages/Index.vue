@@ -97,13 +97,181 @@
     <div class="pie animate__animated animate__bounceInUp" ref="pie"></div>
     <el-carousel :interval="3000" type="card" height="150px">
       <el-carousel-item>
-        <h1>1</h1>
+        <el-descriptions class="margin-top" :column="3" :size="size" border>
+          <el-descriptions-item>
+            <template #label>
+              <div class="cell-item">
+                <el-icon :style="iconStyle">
+                  <user />
+                </el-icon>
+                Username
+              </div>
+            </template>
+            kooriookami
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template #label>
+              <div class="cell-item">
+                <el-icon :style="iconStyle">
+                  <iphone />
+                </el-icon>
+                Telephone
+              </div>
+            </template>
+            18100000000
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template #label>
+              <div class="cell-item">
+                <el-icon :style="iconStyle">
+                  <location />
+                </el-icon>
+                Place
+              </div>
+            </template>
+            Suzhou
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template #label>
+              <div class="cell-item">
+                <el-icon :style="iconStyle">
+                  <tickets />
+                </el-icon>
+                Remarks
+              </div>
+            </template>
+            <el-tag size="small">School</el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template #label>
+              <div class="cell-item">
+                <el-icon :style="iconStyle">
+                  <office-building />
+                </el-icon>
+                Address
+              </div>
+            </template>
+            No.1188, Wuzhong Avenue, Wuzhong District, Suzhou, Jiangsu Province
+          </el-descriptions-item>
+        </el-descriptions>
       </el-carousel-item>
       <el-carousel-item>
-        <h1>2</h1>
+        <el-descriptions class="margin-top" :column="3" :size="size" border>
+          <el-descriptions-item>
+            <template #label>
+              <div class="cell-item">
+                <el-icon :style="iconStyle">
+                  <user />
+                </el-icon>
+                Username
+              </div>
+            </template>
+            kooriookami
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template #label>
+              <div class="cell-item">
+                <el-icon :style="iconStyle">
+                  <iphone />
+                </el-icon>
+                Telephone
+              </div>
+            </template>
+            18100000000
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template #label>
+              <div class="cell-item">
+                <el-icon :style="iconStyle">
+                  <location />
+                </el-icon>
+                Place
+              </div>
+            </template>
+            Suzhou
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template #label>
+              <div class="cell-item">
+                <el-icon :style="iconStyle">
+                  <tickets />
+                </el-icon>
+                Remarks
+              </div>
+            </template>
+            <el-tag size="small">School</el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template #label>
+              <div class="cell-item">
+                <el-icon :style="iconStyle">
+                  <office-building />
+                </el-icon>
+                Address
+              </div>
+            </template>
+            No.1188, Wuzhong Avenue, Wuzhong District, Suzhou, Jiangsu Province
+          </el-descriptions-item>
+        </el-descriptions>
       </el-carousel-item>
       <el-carousel-item>
-        <h1>1</h1>
+        <el-descriptions class="margin-top" :column="3" :size="size" border>
+          <el-descriptions-item>
+            <template #label>
+              <div class="cell-item">
+                <el-icon :style="iconStyle">
+                  <user />
+                </el-icon>
+                Username
+              </div>
+            </template>
+            kooriookami
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template #label>
+              <div class="cell-item">
+                <el-icon :style="iconStyle">
+                  <iphone />
+                </el-icon>
+                Telephone
+              </div>
+            </template>
+            18100000000
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template #label>
+              <div class="cell-item">
+                <el-icon :style="iconStyle">
+                  <location />
+                </el-icon>
+                Place
+              </div>
+            </template>
+            Suzhou
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template #label>
+              <div class="cell-item">
+                <el-icon :style="iconStyle">
+                  <tickets />
+                </el-icon>
+                Remarks
+              </div>
+            </template>
+            <el-tag size="small">School</el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template #label>
+              <div class="cell-item">
+                <el-icon :style="iconStyle">
+                  <office-building />
+                </el-icon>
+                Address
+              </div>
+            </template>
+            No.1188, Wuzhong Avenue, Wuzhong District, Suzhou, Jiangsu Province
+          </el-descriptions-item>
+        </el-descriptions>
       </el-carousel-item>
     </el-carousel>
   </div>
@@ -223,14 +391,6 @@ onMounted(() => {
 }
 .el-carousel {
   width: 100%;
-}
-
-.el-carousel__item:nth-child(2n) {
-  background-color: #99a9bf;
-}
-
-.el-carousel__item:nth-child(2n + 1) {
-  background-color: #d3dce6;
 }
 
 .line {
